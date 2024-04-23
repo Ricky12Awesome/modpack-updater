@@ -17,6 +17,19 @@ You can find how [here](https://docker-minecraft-server.readthedocs.io/en/latest
 
 `Project ID` can be found on the right side under `About Project` section of a modpack page you can find modpacks [here](https://www.curseforge.com/minecraft/search?page=1&pageSize=20&sortBy=relevancy&class=modpacks)
 
+#### `AUTO_DELETE`
+**Optional**
+
+default: `"true"`
+
+Auto deletes downloaded server archive
+
+#### `FORCE_UNPACK`
+
+default: `"false"`
+
+Will always unpack server archive
+
 ### Volumes
 
 `/data`: Should be the same as in [itzg/minecraft-server](https://docker-minecraft-server.readthedocs.io/en/latest/data-directory/)

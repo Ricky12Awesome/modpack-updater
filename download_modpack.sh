@@ -1,9 +1,36 @@
 #!/usr/bin/env sh
 
 CACHE_PATH="latest_filename_cache.txt"
-CACHE=$(cat $CACHE_PATH 2>/dev/null || echo "")
+CACHE=""
+
+if [[ -z $AUTO_DELETE ]]; then
+  AUTO_DELETE="true"
+fi
+
+if [[ -z $FORCE_UNPACK ]]; then
+  FORCE_UNPACK="false"
+fi
+
+if [[ -f $CACHE_PATH ]]; then
+  CACHE=$(cat $CACHE_PATH)
+fi
+
 HEADERS="x-api-key: $CF_API_KEY"
 URL="https://api.curseforge.com/v1/mods/$CF_PROJECT_ID"
+
+unpack() {
+  echo Unpacking $fileName...
+  unzip -uo $fileName -d .
+
+  folder=${fileName%.*}
+
+  if [[ -d $folder ]]; then
+    echo "Moving $folder..."
+    # Can't use mv because "Directory not empty"
+    cp -rf $folder/* .
+    rm -rf $folder
+  fi
+}
 
 download() {
   echo $fileName >$CACHE_PATH
@@ -13,14 +40,20 @@ download() {
     wget $downloadUrl
   fi
 
-  echo Unpacking $fileName...
-  unzip -fo $fileName -d .
+  unpack
 
-  echo Deleting $fileName...
-  rm -f $fileName
+  if [[ $AUTO_DELETE == "true" ]]; then
+    echo Deleting $fileName...
+    rm -f $fileName
+  fi
 
   echo "Finished"
 }
+
+if [[ $FORCE_UNPACK == "true" && -f "$CACHE" ]]; then
+  fileName=$CACHE
+  unpack
+fi
 
 if [[ -f "force-update.zip" ]]; then
   fileName="force-update.zip"
@@ -42,7 +75,7 @@ manifest=$(curl -sH "$HEADERS" $URL/files/$serverPackFileId)
 fileName=$(echo $manifest | jq -r ".data.fileName")
 downloadUrl=$(echo $manifest | jq -r ".data.downloadUrl")
 
-if [ $(cat $CACHE_PATH) = $fileName ]; then
+if [ $CACHE = $fileName ]; then
   echo Skipping $fileName already on version
   echo to force a download, delete $CACHE_PATH
 
