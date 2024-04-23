@@ -1,0 +1,18 @@
+services:
+  modpack-updater:
+    # TODO:
+    # use https://docs.docker.com/compose/compose-file/build/#attributes 
+    # https://github.com/mycompany/example.git#branch_or_tag:subdirectory
+    build:
+      context: .
+      dockerfile: DockerFile
+
+    # https://docker-minecraft-server.readthedocs.io/en/latest/types-and-platforms/mod-platforms/auto-curseforge/#api-key
+    environment:
+      CF_API_KEY: ${CF_API_KEY}
+     
+      # https://www.curseforge.com/minecraft/modpacks/deceasedcraft
+      CF_PROJECT_ID: 490660
+      
+    volumes:
+      - ./test/data:/data
