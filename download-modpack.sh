@@ -15,9 +15,6 @@ if [[ -f $CACHE_PATH ]]; then
   CACHE=$(cat $CACHE_PATH)
 fi
 
-HEADERS="x-api-key: $CF_API_KEY"
-URL="https://api.curseforge.com/v1/mods/$CF_PROJECT_ID"
-
 unpack() {
   echo Unpacking $fileName...
   unzip -uo $fileName -d .
@@ -25,9 +22,10 @@ unpack() {
   folder=${fileName%.*}
 
   if [[ -d "$folder" ]]; then
-    echo "Moving $folder..."
+    echo "Copying ./$folder to $PWD..."
     # Can't use mv because "Directory not empty"
-    cp -rf $folder/* .
+    cp -urf $folder/* .
+    echo "Deleting ./$folder..."
     rm -rf $folder
   fi
 }
@@ -50,16 +48,20 @@ download() {
   echo "Finished"
 }
 
-if [[ $FORCE_UNPACK == "true" && -f "$CACHE" ]]; then
-  fileName="$CACHE"
-  unpack
-fi
-
 if [[ -f "force-update.zip" ]]; then
   fileName="force-update.zip"
   download
   exit
 fi
+
+if [[ $FORCE_UNPACK == "true" && -f "$CACHE" ]]; then
+  fileName="$CACHE"
+  unpack
+  exit
+fi
+
+HEADERS="x-api-key: $CF_API_KEY"
+URL="https://api.curseforge.com/v1/mods/$CF_PROJECT_ID"
 
 mainFileId=$(curl -sH "$HEADERS" $URL | jq ".data.mainFileId")
 serverPackFileId=$(curl -sH "$HEADERS" $URL/files/$mainFileId | jq ".data.serverPackFileId")
