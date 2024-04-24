@@ -1,12 +1,14 @@
 FROM alpine:edge
 
-RUN apk add jq
-RUN apk add curl
-RUN apk add unzip
+RUN apk add --no-cache -U jq curl unzip su-exec
 
 VOLUME [ "/data" ]
 WORKDIR /data
 
-COPY --chmod=755 download_modpack.sh /download_modpack.sh
+RUN addgroup -g 1000 minecraft
+RUN adduser -Ss /bin/false -u 1000 -G minecraft -h /home/minecraft minecraft
 
-ENTRYPOINT [ "/download_modpack.sh" ]
+COPY --chmod=755 download-modpack.sh /download-modpack.sh
+COPY --chmod=755 init /init
+
+ENTRYPOINT [ "/init" ]

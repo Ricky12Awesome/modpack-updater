@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+: "${UID:=1000}"
+: "${GID:=1000}"
+umask "${UMASK:=0002}"
+
+chown -R $UID:$GID /data
+# chmod -R 777 /data
+
+su-exec $UID:$GID "/download-modpack.sh"

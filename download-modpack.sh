@@ -24,7 +24,7 @@ unpack() {
 
   folder=${fileName%.*}
 
-  if [[ -d $folder ]]; then
+  if [[ -d "$folder" ]]; then
     echo "Moving $folder..."
     # Can't use mv because "Directory not empty"
     cp -rf $folder/* .
@@ -51,7 +51,7 @@ download() {
 }
 
 if [[ $FORCE_UNPACK == "true" && -f "$CACHE" ]]; then
-  fileName=$CACHE
+  fileName="$CACHE"
   unpack
 fi
 
@@ -75,7 +75,7 @@ manifest=$(curl -sH "$HEADERS" $URL/files/$serverPackFileId)
 fileName=$(echo $manifest | jq -r ".data.fileName")
 downloadUrl=$(echo $manifest | jq -r ".data.downloadUrl")
 
-if [ $CACHE = $fileName ]; then
+if [ "$CACHE" = "$fileName" ]; then
   echo Skipping $fileName already on version
   echo to force a download, delete $CACHE_PATH
 
