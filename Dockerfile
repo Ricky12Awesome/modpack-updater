@@ -1,6 +1,7 @@
 FROM alpine:edge
 
-RUN apk add --no-cache -U jq curl unzip su-exec
+RUN apk update
+RUN apk add --no-cache -U wget jq curl unzip su-exec
 
 VOLUME [ "/data" ]
 WORKDIR /data

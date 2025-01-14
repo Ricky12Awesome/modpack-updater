@@ -17,32 +17,32 @@ fi
 
 unpack() {
   echo Unpacking $fileName...
-  unzip -uo $fileName -d .
+  unzip -uo "$fileName" -d .
 
   folder=${fileName%.*}
 
   if [[ -d "$folder" ]]; then
     echo "Copying ./$folder to $PWD..."
     # Can't use mv because "Directory not empty"
-    cp -urf $folder/* .
+    cp -urf "$folder"/* .
     echo "Deleting ./$folder..."
-    rm -rf $folder
+    rm -rf "$folder"
   fi
 }
 
 download() {
   echo $fileName >$CACHE_PATH
 
-  if ! [[ -z $downloadUrl ]]; then
-    echo Downloading $fileName...
-    wget $downloadUrl
+  if ! [[ -z "$downloadUrl" ]]; then
+    echo Downloading $fileName \($downloadUrl\)...
+    wget -nv --show-progress --progress=bar:force:noscroll "$downloadUrl"
   fi
 
   unpack
 
   if [[ $AUTO_DELETE == "true" ]]; then
     echo Deleting $fileName...
-    rm -f $fileName
+    rm -f "$fileName"
   fi
 
   echo "Finished"
