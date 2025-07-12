@@ -11,11 +11,16 @@ if [[ -z $FORCE_UNPACK ]]; then
   FORCE_UNPACK="false"
 fi
 
+echo Auto Delete: "$AUTO_DELETE", Force Unpack: "$FORCE_UNPACK"
+
 if [[ -f $CACHE_PATH ]]; then
   CACHE=$(cat $CACHE_PATH)
 fi
 
 unpack() {
+  # TODO: don't delete / or re add custom mods
+  echo "Deleting mods in ./mods directory"
+  rm -rf ./mods/*
   echo Unpacking $fileName...
   unzip -uo "$fileName" -d .
 
@@ -33,7 +38,7 @@ unpack() {
 download() {
   echo $fileName >$CACHE_PATH
 
-  if ! [[ -z "$downloadUrl" ]]; then
+  if [[ -n "$downloadUrl" && ! -f $fileName ]]; then
     echo Downloading $fileName \($downloadUrl\)...
     wget -nv --show-progress --progress=bar:force:noscroll "$downloadUrl"
   fi
